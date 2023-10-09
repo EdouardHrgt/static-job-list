@@ -16,15 +16,19 @@ function setNew(bool) {
 
 const jobList = ref(jobs);
 const tagSet = ref(new Set());
-const tagsList = computed(() => {
-  return [...tagSet.value];
-});
+// const tagsList = computed(() => {
+//   return [...tagSet.value];
+// });
 
 function addToTags(tag) {
   tagSet.value.add(tag);
 }
 
-const tagsListBis = computed(() => {
+function removeTag(tag) {
+  tagSet.value.delete(tag);
+}
+
+const reactiveJobs = computed(() => {
   const selectedTags = [...tagSet.value]; // Convertir les tagsSet en tableau
   if (selectedTags.length === 0) {
     return jobList.value; // Si aucun tag n'est sélectionné, renvoyer la liste complète de jobs
@@ -41,13 +45,25 @@ const tagsListBis = computed(() => {
 </script>
 
 <template>
-  <header>
-    <h1 v-if="tagsList.length" class="text-xl font-bold">{{ tagsListBis }}</h1>
-  </header>
-  <main class="bg-teal-50 py-20 px-6 lg:px-6">
+  <header class="mb-16 lg:mb-0"></header>
+  <main class="pb-[7rem] px-6 lg:px-6">
+    <div
+      v-show="tagSet.size > 0"
+      class="flex gap-5 max-w-6xl bg-white rounded-md justify-center mx-auto relative top-[-4rem] lg:top-0 translate-y-[-50%] py-6 flex-wrap"
+    >
+      <div class="overflow-hidden rounded-md flex bg-cyan200 gap-2 pl-4 items-center h-[2rem]" v-for="tag in tagSet" :key="tag">
+        <p class="block font-bold text-teal-500">{{ tag }}</p>
+        <button
+          @click="removeTag(tag)"
+          class="text-white flex justify-center items-center h-[100%] font-bold bg-teal-500 px-2 hover:bg-black"
+        >
+          X
+        </button>
+      </div>
+    </div>
     <section
       class="relative rounded-md md:flex max-w-6xl mx-auto md:my-10 mb-16 md:mb-0 items-center md:gap-5 lg:gap-8 px-8 py-8 bg-white border-l-[5px] border-teal-500 shadow-xl"
-      v-for="job in jobList"
+      v-for="job in reactiveJobs"
       :key="job.id"
     >
       <img :src="getImageUrl(job.logo)" alt="" class="absolute md:static top-[-2rem] w-16 md:w-auto" />
